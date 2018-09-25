@@ -83,7 +83,8 @@ public class HW_reCaptcha extends HttpServlet {
 //		out.flush();
 //		out.close();
 		
-		ReCaptcha.reCaptcha(response);
+		String code = ReCaptcha.createVerifyCode();
+		ReCaptcha.generateVerifyPic(200, 80, response.getOutputStream(), code);
 	}
 
 }
