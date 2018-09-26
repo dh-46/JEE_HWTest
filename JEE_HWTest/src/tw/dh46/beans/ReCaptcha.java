@@ -21,7 +21,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 public class ReCaptcha {
-	final private static String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+	//	扣掉容易搞混的Oo0l
+	final private static String chars = "ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789";
 
 	public ReCaptcha() {
 		// 建構式沒做事
@@ -30,7 +31,7 @@ public class ReCaptcha {
 	// 產生驗證碼 (預設值)
 	public static String createVerifyCode() {
 		// 預設版本
-		return createVerifyCode(5, chars);
+		return createVerifyCode(4, chars);
 	}
 
 	// 產生驗證碼 (自訂長度)
@@ -64,39 +65,70 @@ public class ReCaptcha {
 	 * 
 	 */
 	public static void generateVerifyPic(int height, int width, OutputStream out, String verifyCode) throws IOException {
-		BufferedImage bimg = new BufferedImage(200, 80, BufferedImage.TYPE_INT_RGB);
+		BufferedImage bimg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = bimg.createGraphics();
 
-		// background pic
-		g2d.setColor(Color.WHITE);
+		//  背景圖片
+		g2d.setColor(Color.BLACK);
 		g2d.fillRect(0, 0, bimg.getWidth(), bimg.getHeight());
-
+		//	圖片邊框
+		g2d.setColor(Color.WHITE);
+		g2d.fillRect(1, 1, bimg.getWidth()-2, bimg.getHeight()-2);
+		
+		//	干擾點
+		
+		
+		
+		
 		// 字串預設高度
-		int stringY = 60;
-		int stringX = 20;
-
-		// 儲存字串(解密用)
-		String key = "";
-
+		int stringY = (int)(height*0.75);
+		int stringX = (int)(width*0.05);
+		
+		//	字體隨圖片大小變化的最大值
+		int fontMaxRand = (int)(height/2);
+		
+		//	字體最小值
+		int fontMin = (int)(height*0.75);
+		
+		//	字體間隔
+		int fontGap = (int)(width/verifyCode.length()*0.8);
+		
+		//	字串變化控制
 		for (int i = 0; i < verifyCode.length(); i++) {
-			int ranY = (int) (Math.random() * 20 - 20);
+			//	隨機顏色
+			int r = (int)(Math.random()*200);
+			int g = (int)(Math.random()*200); 
+			int b = (int)(Math.random()*200);
+			Color randColor = new Color(r, g, b);
+			
+			int fontSize = (int)(Math.random()*fontMaxRand+fontMin);
+			//int ranY = (int)(Math.random()*fontMin-fontMin);
 			String aChar = verifyCode.substring(i, i + 1);
 
-			Font font = new Font("Monospaced", Font.ITALIC, 20);
+			Font font = new Font("Monospaced", Font.ITALIC, fontSize);
 			g2d.setFont(font);
-			g2d.setColor(Color.BLACK);
+			g2d.setColor(randColor);
 
-			g2d.drawString(aChar, stringX + (i+1)*20, stringY + ranY);
-			key = key.concat(aChar);
+			g2d.drawString(aChar, stringX + (i)*fontGap, stringY);
 		}
+		
+		//	寫出至串流response.getOutputStream?
 		ImageIO.write(bimg, "png", out);
 		out.flush();
 		out.close();
 	}
-
-
-	public static void main(String[] args) {
-		String a = ReCaptcha.createVerifyCode(5, "HelloWorld");
-		System.out.println(a);
+	
+	
+	//	驗證驗證碼是否正確
+	public static boolean checkVerifyCode(String code, String userInput) {
+		boolean codeIsCorrect = false;
+		if (userInput != "" || userInput != null) {
+			code = code.toLowerCase();
+			userInput = userInput.toLowerCase();
+			if (code.equals(userInput)) {
+				codeIsCorrect = true;
+			}
+		}
+		return codeIsCorrect;
 	}
 }
