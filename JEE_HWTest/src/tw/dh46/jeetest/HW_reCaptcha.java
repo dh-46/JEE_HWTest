@@ -38,7 +38,7 @@ public class HW_reCaptcha extends HttpServlet {
 		String code = ReCaptcha.createVerifyCode();
 		HttpSession session = request.getSession();
 		session.setAttribute("code", code);
-		ReCaptcha.generateVerifyPic(50, 150, response.getOutputStream(), code);
+		ReCaptcha.generateVerifyPic(40, 80, response.getOutputStream(), code);
 		
 	}
 
