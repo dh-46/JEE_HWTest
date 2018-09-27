@@ -16,7 +16,7 @@
 		String code = (String)session.getAttribute("code");
 		
 		
-		if (ReCaptcha.checkVerifyCode(code, request.getParameter("userAns"))) {
+		if (ReCaptcha.checkVerifyCode(code, request.getParameter("verifycode"))) {
 			out.println("OK");
 		} else {
 			response.sendRedirect("hw_loginpic.html");
