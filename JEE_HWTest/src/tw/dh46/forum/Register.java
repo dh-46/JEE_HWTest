@@ -22,10 +22,10 @@ import tw.dh46.beans.ReCaptcha;
  * 	2.資料送到後端Register(當成註冊的Controller: 分派工作)
  * 
  */
-@WebServlet("/Controller")
-public class Controller extends HttpServlet {
+@WebServlet("/Register")
+public class Register extends HttpServlet {
 	
-    public Controller() {
+    public Register() {
         super();
     }
     
